@@ -55,6 +55,10 @@ add_library(differential_drive_controller SHARED
   src/math/twist_2d.cpp
   src/math/transform_2d.cpp
   src/math/translation_2d.cpp
+
+  src/wheels/wheel_speeds.cpp
+  src/wheels/wheel_positions.cpp
+  src/wheels/wheel_handle.cpp
 )
 target_compile_features(differential_drive_controller PUBLIC cxx_std_17)
 target_include_directories(differential_drive_controller PUBLIC
