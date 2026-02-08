@@ -11,7 +11,15 @@ endif()
 # S1 from https://github.com/ros-controls/ros2_controllers/issues/1053
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+# Compile Settings
+add_compile_definitions(RCPPUTILS_VERSION_MAJOR=${rcpputils_VERSION_MAJOR})
+add_compile_definitions(RCPPUTILS_VERSION_MINOR=${rcpputils_VERSION_MINOR})
+
+# Add Packages
 set(THIS_PACKAGE_INCLUDE_DEPENDS
+  ament_cmake
+  backward_ros
+
   control_toolbox
   controller_interface
   generate_parameter_library
@@ -29,19 +37,18 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   tf2_geometry_msgs
 )
 
-find_package(ament_cmake REQUIRED)
-find_package(backward_ros REQUIRED)
+# Find each Package
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
-add_compile_definitions(RCPPUTILS_VERSION_MAJOR=${rcpputils_VERSION_MAJOR})
-add_compile_definitions(RCPPUTILS_VERSION_MINOR=${rcpputils_VERSION_MINOR})
 
+# Generate Parameter Library
 generate_parameter_library(differential_drive_controller_parameters
   src/differential_drive_controller_parameters.yaml
   include/differential_drive_controller/custom_validators.hpp
 )
-#sadads
+
+# Compile source files
 add_library(differential_drive_controller SHARED
   src/differential_drive_controller.cpp
 )
@@ -49,14 +56,17 @@ target_compile_features(differential_drive_controller PUBLIC cxx_std_17)
 target_include_directories(differential_drive_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/differential_drive_controller>
+  /opt/ros/humble/include/rclcpp
 )
+
 target_link_libraries(differential_drive_controller
   PUBLIC
-    differential_drive_controller_parameters)
+    differential_drive_controller_parameters
+    rclcpp::rclcpp
+)
 
 find_package(fmt REQUIRED)
 target_link_libraries(differential_drive_controller PRIVATE fmt::fmt)
-# message(STATUS "Found fmt version: ${fmt_VERSION}")
     
 ament_target_dependencies(differential_drive_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 pluginlib_export_plugin_description_file(controller_interface differential_drive_plugin.xml)
