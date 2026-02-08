@@ -55,6 +55,7 @@ add_library(differential_drive_controller SHARED
 target_compile_features(differential_drive_controller PUBLIC cxx_std_17)
 target_include_directories(differential_drive_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/differential_drive_controller/include>
   $<INSTALL_INTERFACE:include/differential_drive_controller>
   /opt/ros/humble/include/rclcpp
 )
