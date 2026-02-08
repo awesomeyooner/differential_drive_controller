@@ -84,6 +84,7 @@ struct WheelHandle
      */
     static double get_velocity(std::vector<WheelHandle>& handles);
 
+    
 }; // struct WheelHandle
 
 #endif // WHEEL_HANDLE_HPP

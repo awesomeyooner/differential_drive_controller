@@ -59,6 +59,10 @@ add_library(differential_drive_controller SHARED
   src/wheels/wheel_speeds.cpp
   src/wheels/wheel_positions.cpp
   src/wheels/wheel_handle.cpp
+
+  src/control/differential_drive_drivetrain.cpp
+  src/control/differential_drive_kinematics.cpp
+  src/control/differential_drive_odometry.cpp
 )
 target_compile_features(differential_drive_controller PUBLIC cxx_std_17)
 target_include_directories(differential_drive_controller PUBLIC
