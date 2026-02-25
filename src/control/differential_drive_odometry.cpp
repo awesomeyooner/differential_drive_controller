@@ -49,11 +49,6 @@ void DifferentialDriveOdometry::update(WheelPositions current_wheel_positions)
     // Calculate the twist between last loop and now
     Twist2d twist = m_kinematics.to_twist(m_prev_wheel_positions, current_wheel_positions);
 
-    // double left = current_wheel_positions.left_distance - m_prev_wheel_positions.left_distance;
-    // double right = current_wheel_positions.right_distance - m_prev_wheel_positions.right_distance;
-
-    // Twist2d twist = m_kinematics.to_twist(left, right);
-
     Transform2d new_pose = m_pose.exponential(twist);
 
     // TODO: Overload assignment operator for Transform2d 
