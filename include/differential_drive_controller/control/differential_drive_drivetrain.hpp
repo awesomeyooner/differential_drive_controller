@@ -2,132 +2,175 @@
 #define DIFFERENTIAL_DRIVE_DRIVETRAIN_HPP
 
 
-#include "differential_drive_controller/wheels/wheel_handle.hpp"
+#include "differential_drive_controller/math/twist_2d.hpp"
+#include "differential_drive_controller/math/transform_2d.hpp"
+#include "differential_drive_controller/math/translation_2d.hpp"
+
 #include "differential_drive_controller/wheels/wheel_positions.hpp"
 #include "differential_drive_controller/wheels/wheel_speeds.hpp"
+#include "differential_drive_controller/wheels/wheel_handle.hpp"
+
+#include "differential_drive_controller/control/differential_drive_kinematics.hpp"
+#include "differential_drive_controller/control/differential_drive_odometry.hpp"
+
+#include <cmath>
+#include <vector>
+
+#include "nav_msgs/msg/odometry.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/quaternion.hpp"
+#include "tf2_msgs/msg/tf_message.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
 
 class DifferentialDriveDrivetrain{
 
     public:
 
-        DifferentialDriveOdometry odometry;
-
-        std::vector<WheelHandle> left_wheels;
-        std::vector<WheelHandle> right_wheels;
-
-        double wheel_radius;
-
-        DifferentialDriveDrivetrain(double track_width_, double wheel_radius_) : 
-            odometry(track_width_), wheel_radius(wheel_radius_){}
-    
-        void initialize(std::vector<WheelHandle>& left, std::vector<WheelHandle>& right ){
-            left_wheels = left;
-            right_wheels = right;
-        }
-
-        void update(){
-            double left_positions = get_left_positions();
-            double right_positions = get_right_positions();
-
-            odometry.update(left_positions, right_positions);
-        }
-
-        // get members
-        DifferentialDriveOdometry* get_odometry(){
-            return &odometry;
-        }
-
-        DifferentialDriveKinematics* get_kinematics(){
-            return odometry.get_kinematics();
-        }
-
-        // get positions
-        double get_left_positions(){
-            return WheelHandle::get_position(left_wheels) * wheel_radius;
-        }
-
-        double get_right_positions(){
-            return WheelHandle::get_position(right_wheels) * wheel_radius;
-        }
-
-        WheelPositions get_wheel_positions(){
-            return WheelPositions(get_left_positions(), get_right_positions());
-        }
-
-        // get velocities
-        double get_left_velocities(){
-            return WheelHandle::get_velocity(left_wheels) * wheel_radius;
-        }
-
-        double get_right_velocities(){
-            return WheelHandle::get_velocity(right_wheels) * wheel_radius;
-        }
-
-        WheelSpeeds get_wheel_speeds(){
-            return WheelSpeeds(get_left_velocities(), get_right_velocities());
-        }
-
-        Twist to_chassis_speed(){
-            return get_kinematics()->toChassisSpeeds(get_wheel_speeds());
-        }
-
-        // controls
-        void drive_from_chassis(Twist desired, bool is_open_loop = false){
-            //meters per second -> radians per second
-            WheelSpeeds wheel_speeds = is_open_loop ? 
-                odometry.get_kinematics()->toWheelSpeedsOpenLoop(desired) : 
-                odometry.get_kinematics()->toWheelSpeeds(desired).times(1 / (wheel_radius));
-
-            //set the wheels to the speeds
-            set_left_command(wheel_speeds.left_velocity);
-            set_right_command(wheel_speeds.right_velocity);
-        }
+        /**
+         * @brief Creates a new model of a differential drive robot with
+         * the specified track width and wheel radius
+         * 
+         * @param track_width `double` The distance between the left and right wheels in meters 
+         * @param wheel_radius `double` The radius of the wheels
+         */
+        DifferentialDriveDrivetrain(double track_width, double wheel_radius);
 
         /**
-         * @brief Drives with values of the twist as percentages (-1, 1)
+         * @brief Borrows ownership of the command and state interfaces and populates the handles
          * 
-         * @param desired Desired chassis speed, each value represented as a percent from (-1, 1)
+         * @param left `std::vector<WheelHandle>&` The left wheel handles
+         * @param right `std::vector<WheelHandle>&` The right wheel handles
          */
-        void drive_open_loop(Twist desired){
-            double linear = desired.dx;
-            double angular = desired.dTheta;
-
-            double angular_coef;
-
-            double left_speed = linear - (angular * angular_coef);
-            double right_speed = linear + (angular * angular_coef);
-
-            set_left_command(left_speed);
-            set_right_command(right_speed);
-        }
-
-        void stop(){
-            set_left_command(0);
-            set_right_command(0);
-        }
+        void init_handles(std::vector<WheelHandle>& left_handles, std::vector<WheelHandle>& right_handles);
 
         /**
-         * @brief Sets the speed in RPS
+         * @brief Updates the odometry calculations
          * 
-         * @param command Desired speed in RPS
          */
-        void set_left_command(double command){
-            WheelHandle::set_command(command, left_wheels);
-        }
+        void update_odometry();
 
         /**
-         * @brief Set the speed in RPS
+         * @brief Get the underlying odometry object
          * 
-         * @param command Desired speed in RPS
+         * @return `DifferentialDriveOdometry*` The odometry object 
          */
-        void set_right_command(double command){
-            WheelHandle::set_command(command, right_wheels);
-        }
+        DifferentialDriveOdometry* get_odometry();
+
+        /**
+         * @brief Get the underlying kinematics object
+         * 
+         * @return `DifferentialDriveKinematics*` The kinematics object
+         */
+        DifferentialDriveKinematics* get_kinematics();
+
+        /**
+         * @brief Get the average left distance traveled in meters
+         * 
+         * @return `double` The distance traveled in meters 
+         */
+        double get_left_distance();
+
+        /**
+         * @brief Get the average right distance traveled in meters
+         * 
+         * @return `double` The distance traveled in meters 
+         */
+        double get_right_distance();
+
+        /**
+         * @brief Gets the distances the left and right wheels have traveled in meters
+         * 
+         * @return `WheelPositions` The distances the left and right wheels have traveled in meters 
+         */
+        WheelPositions get_wheel_distances();
+
+        /**
+         * @brief Get the average left velocity in meters per second
+         * 
+         * @return `double` Velocity in meters per second 
+         */
+        double get_left_velocities();
+
+        /**
+         * @brief Get the average right velocity in meters per second
+         * 
+         * @return `double` Velocity in meters per second 
+         */
+        double get_right_velocities();
+
+        /**
+         * @brief Gets the velocities of the left and right wheels in meters per second
+         * 
+         * @return `WheelSpeeds` The left and right wheel velocities in meters per second 
+         */
+        WheelSpeeds get_wheel_speeds();
+
+        /**
+         * @brief Gets the chassis movement vector
+         * 
+         * @return `Twist2d` The chassis movement vector 
+         */
+        Twist2d get_chassis_speed();
+
+        /**
+         * @brief Sets the speed in rads per second
+         * 
+         * @param rads_per_sec `double` Desired speed in rads per second
+         */
+        void set_left_command(double rads_per_sec);
+
+        /**
+         * @brief Set the speed in rads per second
+         * 
+         * @param rads_per_sec `double` Desired speed in rads per second
+         */
+        void set_right_command(double rads_per_sec);
+
+        /**
+         * @brief Set the speed of both sides in rads per second
+         * 
+         * @param left_rads_per_sec `double` Desired speed in rads per second
+         * @param right_rads_per_sec `double` Desired speed in rads per second
+         */
+        void set_wheel_speeds(double left_rads_per_sec, double right_rads_per_sec);
+
+        /**
+         * @brief Set the speed of both sides in rads per second
+         * 
+         * @param rads_per_sec `double` Desired speed in rads per second
+         */
+        void set_wheel_speeds(WheelSpeeds rads_per_sec);
+
+        /**
+         * @brief Command all motors to 0 rad / s
+         * 
+         */
+        void stop();
+
+        /**
+         * @brief Command the robot to move in the given movement vector
+         * 
+         * @param desired `Twist2d` The commanded movement vector
+         * @param is_open_loop `bool = false` Whether or not to use proper units or not
+         * @param turn_coeff `double = 1` The turning coefficient for open loop
+         */
+        void drive_from_chassis(Twist2d desired, bool is_open_loop = false, double turn_coeff = 1);
 
     private:
 
+        // Odometry object to model differential drive
+        DifferentialDriveOdometry m_odometry;
 
+        // Vector of all left wheel handles
+        std::vector<WheelHandle> m_left_wheels;
+
+        // Vector of all right wheel handles
+        std::vector<WheelHandle> m_right_wheels;
+
+        // The radius of the wheels in meters
+        double m_wheel_radius;
 
 }; // class DifferentialDriveDrivetrain
 

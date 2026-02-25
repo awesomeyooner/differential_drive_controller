@@ -69,7 +69,7 @@ target_include_directories(differential_drive_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/differential_drive_controller/include>
   $<INSTALL_INTERFACE:include/differential_drive_controller>
-  /opt/ros/humble/include/rclcpp
+  /opt/ros/humble/include
 )
 
 target_link_libraries(differential_drive_controller

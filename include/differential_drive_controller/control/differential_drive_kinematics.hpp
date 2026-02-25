@@ -38,16 +38,17 @@ class DifferentialDriveKinematics
          * @brief Returns the wheel speeds required to move at the desired chassis speeds
          * 
          * @param chassis_speed Desired chassis twist
-         * @return WheelSpeeds 
+         * @return WheelSpeeds The left and right wheel speeds
          */
         WheelSpeeds to_wheel_speeds(Twist2d chassis_speed);
 
         /**
          * @brief Returns the wheel speeds to move at the arbitrary chassis speeds
          * 
-         * @param chassis_speed 
-         * @param turn_coefficient 
-         * @return WheelSpeeds 
+         * @param chassis_speed `WheelSpeeds` The arbitrary wheel speeds of the robot
+         * @param turn_coefficient `double` How much the `dTheta` element in `chassis_speed
+         * affects the turn rate
+         * @return WheelSpeeds The left and right wheels peeds
          */
         WheelSpeeds to_arbitrary_wheel_speeds(Twist2d chassis_speed, double turn_coefficient = 1);
 
