@@ -43,7 +43,9 @@ DifferentialDriveKinematics* DifferentialDriveDrivetrain::get_kinematics()
 double DifferentialDriveDrivetrain::get_left_distance()
 {
     // Return the average distance of all wheels
-    return WheelHandle::get_position(m_left_wheels);
+
+    // Rads * radius = distance
+    return m_wheel_radius * WheelHandle::get_position(m_left_wheels);
 
 } // end of "get_left_distance"
 
@@ -51,7 +53,9 @@ double DifferentialDriveDrivetrain::get_left_distance()
 double DifferentialDriveDrivetrain::get_right_distance()
 {
     // Return the average distance of all wheels
-    return WheelHandle::get_position(m_right_wheels);
+
+    // Rads * radius = distance
+    return m_wheel_radius * WheelHandle::get_position(m_right_wheels);
 
 } // end of "get_right_distance"
 

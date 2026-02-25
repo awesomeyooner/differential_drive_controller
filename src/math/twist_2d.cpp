@@ -13,7 +13,7 @@ Twist2d::Twist2d() :
 Twist2d::Twist2d(double dx_, double dy_, double dTheta_) :
     dx(dx_),
     dy(dy_),
-    dTheta(dTheta)
+    dTheta(dTheta_)
     {} // end of "Twist2d(double, double, double)"
 
 

@@ -86,6 +86,8 @@ namespace differential_drive_controller{
         // publish messages
         Transform2d pose = drivetrain->get_odometry()->get_pose();
 
+        // RCLCPP_INFO(get_node()->get_logger(), std::to_string(pose.x).c_str());
+
         Twist2d twist = drivetrain->get_chassis_speed();
 
         std_msgs::msg::Header header;
