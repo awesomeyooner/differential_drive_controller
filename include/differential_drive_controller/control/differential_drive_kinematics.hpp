@@ -22,9 +22,9 @@ class DifferentialDriveKinematics
         /**
          * @brief Construct a new Differential Drive Kinematics object
          * 
-         * @param track_width_ `double` The distance between the left and right wheels
+         * @param track_width `double` The distance between the left and right wheels
          */
-        DifferentialDriveKinematics(double track_width_);
+        DifferentialDriveKinematics(double track_width);
 
         /**
          * @brief Returns the chassis twist of the robot given the speeds
@@ -37,28 +37,19 @@ class DifferentialDriveKinematics
         /**
          * @brief Returns the wheel speeds required to move at the desired chassis speeds
          * 
-         * @param chassisSpeed Desired chassis twist
+         * @param chassis_speed Desired chassis twist
          * @return WheelSpeeds 
          */
-        WheelSpeeds to_wheel_speeds(Twist2d chassisSpeed);
+        WheelSpeeds to_wheel_speeds(Twist2d chassis_speed);
 
         /**
          * @brief Returns the wheel speeds to move at the arbitrary chassis speeds
          * 
-         * @param chassisSpeed 
-         * @param turnCoefficient 
+         * @param chassis_speed 
+         * @param turn_coefficient 
          * @return WheelSpeeds 
          */
-        WheelSpeeds to_arbitrary_wheel_speeds(Twist2d chassisSpeed, double turnCoefficient = 1);
-
-        /**
-         * @brief Returns a twist for a difference in initial and final
-         * 
-         * @param initial Initial wheel positions
-         * @param final Final wheel positions
-         * @return `Twist2d` The resulting twist 
-         */
-        Twist2d to_twist(WheelPositions initial, WheelPositions final);
+        WheelSpeeds to_arbitrary_wheel_speeds(Twist2d chassis_speed, double turn_coefficient = 1);
 
         /**
          * @brief Returns the twist given how much each wheel has turned
@@ -69,10 +60,19 @@ class DifferentialDriveKinematics
          */
         Twist2d to_twist(double left_distance, double right_distance);
 
+        /**
+         * @brief Returns a twist for a difference in initial and final
+         * 
+         * @param initial Initial wheel positions
+         * @param final Final wheel positions
+         * @return `Twist2d` The resulting twist 
+         */
+        Twist2d to_twist(WheelPositions initial, WheelPositions final);
+
     private:
 
         // The distance between the left and right wheels
-        double track_width;
+        double m_track_width;
         
 };
 
