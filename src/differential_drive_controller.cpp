@@ -78,15 +78,15 @@ namespace differential_drive_controller{
             return controller_interface::return_type::ERROR;
         }
 
-        drivetrain->drive_from_chassis(Twist::from_message(*last_command.get()), params.is_open_loop);
+        drivetrain->drive_from_chassis(Twist2d(*last_command.get()), params.is_open_loop);
 
         // update odometry
-        drivetrain->update();
+        drivetrain->update_odometry();
 
         // publish messages
-        Pose2d pose = drivetrain->get_odometry()->get_pose();
+        Transform2d pose = drivetrain->get_odometry()->get_pose();
 
-        Twist twist = drivetrain->to_chassis_speed();
+        Twist2d twist = drivetrain->get_chassis_speed();
 
         std_msgs::msg::Header header;
             header.frame_id = odom_frame_id;
@@ -98,7 +98,7 @@ namespace differential_drive_controller{
             transform_message.header = header;
             transform_message.child_frame_id = base_frame_id;
 
-            transform_message.transform.translation = pose.getTranslation().to_message();
+            transform_message.transform.translation = pose.get_translation().to_vector();
             transform_message.transform.rotation = pose.get_quaternion();
 
         tf_broadcaster->sendTransform(transform_message);
@@ -110,7 +110,7 @@ namespace differential_drive_controller{
             odometry_message.child_frame_id = base_frame_id;
 
             odometry_message.pose.pose.orientation = pose.get_quaternion();
-            odometry_message.pose.pose.position = pose.get_point();
+            odometry_message.pose.pose.position = pose.get_translation().to_point();
             odometry_message.twist.twist = twist.to_message();
         
         odom_publisher->publish(odometry_message);
@@ -158,7 +158,7 @@ namespace differential_drive_controller{
         const controller_interface::CallbackReturn right_status = configure_side(params.right_wheel_names, registered_right_wheel_handles);
 
         //assign wheels to drivetrain
-        drivetrain->initialize(registered_left_wheel_handles, registered_right_wheel_handles);
+        drivetrain->init_handles(registered_left_wheel_handles, registered_right_wheel_handles);
 
         //if both are good, then its a success
         if(left_status == controller_interface::CallbackReturn::SUCCESS && right_status == controller_interface::CallbackReturn::SUCCESS)
@@ -190,7 +190,7 @@ namespace differential_drive_controller{
 
     controller_interface::CallbackReturn DifferentialDriveController::configure_side( 
         const std::vector<std::string>& wheel_names,
-        std::vector<utility::WheelHandle>& registered_handles){
+        std::vector<WheelHandle>& registered_handles){
 
         registered_handles.reserve(wheel_names.size());
 
@@ -228,7 +228,7 @@ namespace differential_drive_controller{
 
             // add this WheelHandle to the list of all wheel handles
             registered_handles.emplace_back(
-                utility::WheelHandle{std::ref(*velocity_handle), std::ref(*position_handle), std::ref(*command_handle)}
+                WheelHandle{std::ref(*velocity_handle), std::ref(*position_handle), std::ref(*command_handle)}
             );
         }
 

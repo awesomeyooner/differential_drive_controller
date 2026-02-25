@@ -1,29 +1,34 @@
 #ifndef DIFFERENTIAL_DRIVE_CONTROLLER_HPP
 #define DIFFERENTIAL_DRIVE_CONTROLLER_HPP
 
+
 #include <chrono>
 #include <memory>
 #include <queue>
 #include <string>
 #include <vector>
 
+#include "rclcpp_lifecycle/state.hpp"
+
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "controller_interface/controller_interface.hpp"
 #include "visibility_control.h"
+
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "nav_msgs/msg/odometry.hpp"
-#include "rclcpp_lifecycle/state.hpp"
+
+
 #include "realtime_tools/realtime_box.hpp"
 #include "realtime_tools/realtime_publisher.hpp"
+
 #include "tf2_msgs/msg/tf_message.hpp"
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "tf2_ros/transform_broadcaster.h"
+
 #include "differential_drive_controller/differential_drive_controller_parameters.hpp"
 
-#include "util/utility.hpp"
-#include "util/differential_drive_kinematics.hpp"
-#include "util/differential_drive_odometry.hpp"
-#include "util/differential_drive_drivetrain.hpp"
+#include "differential_drive_controller/control/differential_drive_drivetrain.hpp"
+
 
 namespace differential_drive_controller
 {
@@ -70,13 +75,13 @@ namespace differential_drive_controller
 
         controller_interface::CallbackReturn configure_side(
             const std::vector<std::string> &wheel_names,
-            std::vector<utility::WheelHandle> &registered_handles);
+            std::vector<WheelHandle> &registered_handles);
 
         std::shared_ptr<ParamListener> param_listener;
         Params params;
 
-        std::vector<utility::WheelHandle> registered_left_wheel_handles;
-        std::vector<utility::WheelHandle> registered_right_wheel_handles;
+        std::vector<WheelHandle> registered_left_wheel_handles;
+        std::vector<WheelHandle> registered_right_wheel_handles;
 
         std::shared_ptr<DifferentialDriveDrivetrain> drivetrain;
 
