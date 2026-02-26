@@ -71,18 +71,32 @@ namespace differential_drive_controller
         controller_interface::CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
 
     protected:
-        const char *feedback_type() const;
 
+        /**
+         * @brief Initializes a vector of wheel handles by assigning the corresponding
+         * state interfaces and command interfaces to each wheel name
+         * 
+         * @param wheel_names `const std::vector<std::string>&` The vector of the joint names for each wheel
+         * @param registered_handles `std::vector<WheelHandle>&` The vector of wheel handles to initialize
+         * @return `controller_interface::CallbackReturn` SUCCESS if properly initialized
+         */
         controller_interface::CallbackReturn init_handles(
-            const std::vector<std::string> &wheel_names,
-            std::vector<WheelHandle> &registered_handles);
+            const std::vector<std::string>& wheel_names,
+            std::vector<WheelHandle>& registered_handles);
 
+        // ParamListener for yaml config
         std::shared_ptr<ParamListener> param_listener;
+
+        // The struct that holds the yaml config
         Params params;
 
+        // The registered wheel handles for the left side
         std::vector<WheelHandle> registered_left_wheel_handles;
+
+        // The registered wheel handles for the right side
         std::vector<WheelHandle> registered_right_wheel_handles;
 
+        // Diff-Drive model, contains kinematics and odometry
         std::shared_ptr<DifferentialDriveDrivetrain> drivetrain;
 
         // wheel info
