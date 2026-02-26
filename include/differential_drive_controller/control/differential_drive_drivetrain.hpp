@@ -38,12 +38,12 @@ class DifferentialDriveDrivetrain{
         DifferentialDriveDrivetrain(double track_width, double wheel_radius);
 
         /**
-         * @brief Borrows ownership of the command and state interfaces and populates the handles
+         * @brief Assigns ownership of the command and state interfaces and populates the handles
          * 
          * @param left `std::vector<WheelHandle>&` The left wheel handles
          * @param right `std::vector<WheelHandle>&` The right wheel handles
          */
-        void init_handles(std::vector<WheelHandle>& left_handles, std::vector<WheelHandle>& right_handles);
+        void assign_handles(std::vector<WheelHandle>& left_handles, std::vector<WheelHandle>& right_handles);
 
         /**
          * @brief Updates the odometry calculations

@@ -154,11 +154,11 @@ namespace differential_drive_controller{
     controller_interface::CallbackReturn DifferentialDriveController::on_activate(const rclcpp_lifecycle::State & previous_state){
         //configure each handle
 
-        const controller_interface::CallbackReturn left_status = configure_side(params.left_wheel_names, registered_left_wheel_handles);
-        const controller_interface::CallbackReturn right_status = configure_side(params.right_wheel_names, registered_right_wheel_handles);
+        const controller_interface::CallbackReturn left_status = init_handles(params.left_wheel_names, registered_left_wheel_handles);
+        const controller_interface::CallbackReturn right_status = init_handles(params.right_wheel_names, registered_right_wheel_handles);
 
         //assign wheels to drivetrain
-        drivetrain->init_handles(registered_left_wheel_handles, registered_right_wheel_handles);
+        drivetrain->assign_handles(registered_left_wheel_handles, registered_right_wheel_handles);
 
         //if both are good, then its a success
         if(left_status == controller_interface::CallbackReturn::SUCCESS && right_status == controller_interface::CallbackReturn::SUCCESS)
@@ -188,10 +188,14 @@ namespace differential_drive_controller{
         return controller_interface::CallbackReturn::SUCCESS;
     }
 
-    controller_interface::CallbackReturn DifferentialDriveController::configure_side( 
+    controller_interface::CallbackReturn DifferentialDriveController::init_handles( 
         const std::vector<std::string>& wheel_names,
-        std::vector<WheelHandle>& registered_handles){
+        std::vector<WheelHandle>& registered_handles)
+    {
 
+        // Make space for the handles
+        // `reserve` and not `resize` since resize default-initialzies
+        // while reserve does not
         registered_handles.reserve(wheel_names.size());
 
         // for reach wheel in wheel_names

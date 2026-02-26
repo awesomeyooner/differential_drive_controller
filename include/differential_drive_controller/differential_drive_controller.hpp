@@ -73,7 +73,7 @@ namespace differential_drive_controller
     protected:
         const char *feedback_type() const;
 
-        controller_interface::CallbackReturn configure_side(
+        controller_interface::CallbackReturn init_handles(
             const std::vector<std::string> &wheel_names,
             std::vector<WheelHandle> &registered_handles);
 

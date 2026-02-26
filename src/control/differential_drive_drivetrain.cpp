@@ -7,12 +7,12 @@ DifferentialDriveDrivetrain::DifferentialDriveDrivetrain(double track_width, dou
 {} // end of "DifferentialDrivetrain(double, double)"
 
 
-void DifferentialDriveDrivetrain::init_handles(std::vector<WheelHandle>&  left_handles, std::vector<WheelHandle>& right_handles)
+void DifferentialDriveDrivetrain::assign_handles(std::vector<WheelHandle>& left_handles, std::vector<WheelHandle>& right_handles)
 {
     m_left_wheels = left_handles;
     m_right_wheels = right_handles;
 
-} // end of "init_handles(std::vector<WheelHandle>& , std::vector<WheelHandle>& )"
+} // end of "assign_handles(std::vector<WheelHandle>& , std::vector<WheelHandle>& )"
 
 
 void DifferentialDriveDrivetrain::update_odometry()
