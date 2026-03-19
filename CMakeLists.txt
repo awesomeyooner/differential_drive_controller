@@ -11,6 +11,9 @@ endif()
 # S1 from https://github.com/ros-controls/ros2_controllers/issues/1053
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+set(CMAKE_BUILD_RPATH "$ENV{HOME}/anaconda3/lib")
+set(CMAKE_INSTALL_RPATH "$ENV{HOME}/anaconda3/lib") 
+
 # Compile Settings
 add_compile_definitions(RCPPUTILS_VERSION_MAJOR=${rcpputils_VERSION_MAJOR})
 add_compile_definitions(RCPPUTILS_VERSION_MINOR=${rcpputils_VERSION_MINOR})
