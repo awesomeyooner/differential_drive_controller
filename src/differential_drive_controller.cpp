@@ -78,7 +78,7 @@ namespace differential_drive_controller
         if (!last_command)
         {
             drivetrain->stop();
-            return controller_interface::return_type::ERROR;
+            return controller_interface::return_type::OK;
         }
 
         double time_since_last_command = abs(
@@ -88,7 +88,7 @@ namespace differential_drive_controller
         if (time_since_last_command > params.command_timeout)
         {
             drivetrain->stop();
-            return controller_interface::return_type::ERROR;
+            return controller_interface::return_type::OK;
         }
 
         drivetrain->drive_from_chassis(Twist2d(*last_command.get()), params.is_open_loop);
