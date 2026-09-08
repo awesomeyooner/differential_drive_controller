@@ -1,19 +1,15 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>differential_drive_controller</name>
-  <version>4.20.0</version>
-  <description>Controller for a differential-drive mobile base.</description>
+  <version>1.0.0</version>
+  <description>Controller for differential drivebases. Very similar to diff_drive_controller</description>
 
-  <maintainer email="bence.magyar.robotics@gmail.com">Bence Magyar</maintainer>
-  <maintainer email="denis@stoglrobotics.de">Denis Štogl</maintainer>
-  <maintainer email="christoph.froehlich@ait.ac.at">Christoph Froehlich</maintainer>
-  <maintainer email="sai.kishor@pal-robotics.com">Sai Kishor Kothakota</maintainer>
-
-  <license>Apache License 2.0</license>
-
-  <url type="website">https://control.ros.org</url>
-
+  <maintainer email="awesomeyooner@gmail.com">Aaron Yoon</maintainer>
   <author email="awesomeyooner@gmail.com">awesomeyooner</author>
+
+  <license>MIT</license>
+
+  <url type="website">https://github.com/awesomeyooner/differential_drive_controller</url>
  
   <buildtool_depend>ament_cmake</buildtool_depend>
   <build_depend>generate_parameter_library</build_depend>
@@ -41,4 +37,5 @@
   <export>
     <build_type>ament_cmake</build_type>
   </export>
+  
 </package>
